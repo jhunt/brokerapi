@@ -18,7 +18,7 @@ package brokerapi_test
 import (
 	"encoding/json"
 
-	"github.com/pivotal-cf/brokerapi"
+	"github.com/jhunt/brokerapi"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

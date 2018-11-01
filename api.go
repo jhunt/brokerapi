@@ -24,7 +24,7 @@ import (
 
 	"code.cloudfoundry.org/lager"
 	"github.com/gorilla/mux"
-	"github.com/pivotal-cf/brokerapi/auth"
+	"github.com/jhunt/brokerapi/auth"
 )
 
 const (
@@ -82,18 +82,20 @@ func New(serviceBroker ServiceBroker, logger lager.Logger, brokerCredentials Bro
 
 func AttachRoutes(router *mux.Router, serviceBroker ServiceBroker, logger lager.Logger) {
 	handler := serviceBrokerHandler{serviceBroker: serviceBroker, logger: logger}
-	router.HandleFunc("/v2/catalog", handler.catalog).Methods("GET")
+	fmt.Printf("attaching routes under %s...\n", serviceBroker.Prefix())
+	fmt.Printf("  ... "+serviceBroker.Prefix()+"/v2/catalog\n")
+	router.HandleFunc(serviceBroker.Prefix()+"/v2/catalog", handler.catalog).Methods("GET")
 
-	router.HandleFunc("/v2/service_instances/{instance_id}", handler.provision).Methods("PUT")
-	router.HandleFunc("/v2/service_instances/{instance_id}", handler.deprovision).Methods("DELETE")
-	router.HandleFunc("/v2/service_instances/{instance_id}/last_operation", handler.lastOperation).Methods("GET")
-	router.HandleFunc("/v2/service_instances/{instance_id}", handler.update).Methods("PATCH")
+	router.HandleFunc(serviceBroker.Prefix()+"/v2/service_instances/{instance_id}", handler.provision).Methods("PUT")
+	router.HandleFunc(serviceBroker.Prefix()+"/v2/service_instances/{instance_id}", handler.deprovision).Methods("DELETE")
+	router.HandleFunc(serviceBroker.Prefix()+"/v2/service_instances/{instance_id}/last_operation", handler.lastOperation).Methods("GET")
+	router.HandleFunc(serviceBroker.Prefix()+"/v2/service_instances/{instance_id}", handler.update).Methods("PATCH")
 
-	router.HandleFunc("/v2/service_instances/{instance_id}/service_bindings/{binding_id}", handler.getBinding).Methods("GET")
-	router.HandleFunc("/v2/service_instances/{instance_id}/service_bindings/{binding_id}", handler.bind).Methods("PUT")
-	router.HandleFunc("/v2/service_instances/{instance_id}/service_bindings/{binding_id}", handler.unbind).Methods("DELETE")
+	router.HandleFunc(serviceBroker.Prefix()+"/v2/service_instances/{instance_id}/service_bindings/{binding_id}", handler.getBinding).Methods("GET")
+	router.HandleFunc(serviceBroker.Prefix()+"/v2/service_instances/{instance_id}/service_bindings/{binding_id}", handler.bind).Methods("PUT")
+	router.HandleFunc(serviceBroker.Prefix()+"/v2/service_instances/{instance_id}/service_bindings/{binding_id}", handler.unbind).Methods("DELETE")
 
-	router.HandleFunc("/v2/service_instances/{instance_id}/service_bindings/{binding_id}/last_operation", handler.lastBindingOperation).Methods("GET")
+	router.HandleFunc(serviceBroker.Prefix()+"/v2/service_instances/{instance_id}/service_bindings/{binding_id}/last_operation", handler.lastBindingOperation).Methods("GET")
 }
 
 type serviceBrokerHandler struct {
